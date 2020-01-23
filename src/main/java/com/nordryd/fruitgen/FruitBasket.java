@@ -1,13 +1,15 @@
 package com.nordryd.fruitgen;
 
 import static java.lang.String.format;
+import static java.util.Arrays.stream;
+import static java.util.stream.IntStream.range;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
 /**
- * Basket sounds cuter than Factory.
+ * Handles actual generation of fruit emojis. Basket sounds cuter than Factory.
  *
  * @author Nordryd
  */
@@ -41,7 +43,9 @@ public class FruitBasket
             return "";
         }
 
-        return getFruit("peach");
+        final StringBuilder strBuilder = new StringBuilder();
+        range(0, length).forEach(index -> strBuilder.append(getFruit(fruits[RNG.nextInt(fruits.length)])));
+        return strBuilder.toString();
     }
 
     /**
@@ -52,20 +56,9 @@ public class FruitBasket
      */
     public static boolean hasFruits(final String... fruits)
     {
-        if (fruits.length == 1)
-        {
-            return FRUITS.containsKey(fruits[0].toLowerCase());
-        }
-
-        for (final String fruit : fruits)
-        {
-            if (!FRUITS.containsKey(fruit.toLowerCase()))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return (fruits.length == 1) ?
+                FRUITS.containsKey(fruits[0].toLowerCase()) :
+                stream(fruits).allMatch(FRUITS::containsKey);
     }
 
     private static String getFruit(final String fruit)

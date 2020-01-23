@@ -1,16 +1,19 @@
 package com.nordryd.fruitgen;
 
+import static com.nordryd.fruitgen.FruitBasket.getFruits;
+import static com.nordryd.fruitgen.FruitBasket.hasFruits;
+import static java.awt.Toolkit.getDefaultToolkit;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.out;
+import static java.util.Arrays.copyOfRange;
 
-import java.awt.*;
 import java.awt.datatransfer.Clipboard;
-import java.util.Arrays;
+import java.awt.datatransfer.StringSelection;
 
 /**
- * Generates a string of fruit and copies it to the clipboard because why not?
+ * Main class. Generates a string of fruit and copies it to the clipboard because why not?
  *
  * @author Nordryd
  */
@@ -20,7 +23,6 @@ public class FruitGenerator
 
     public static void main(final String... args)
     {
-        out.println(args.length);
         if (args.length < 1)
         {
             quit(false);
@@ -31,33 +33,33 @@ public class FruitGenerator
             quit(HELP_STR.equals(args[0]));
         }
 
-        final int length = parseInt(args[0]);
+        final int count = parseInt(args[0]);
 
-        if (length <= 0)
+        if (count <= 0)
         {
             quit(false);
         }
 
-        final Clipboard CLIPBOARD = Toolkit.getDefaultToolkit().getSystemClipboard();
+        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
+        final String fruitString;
+        if (args.length == 1)
+        {
+            fruitString = getFruits(count);
+            out.println(".........");
+        }
+        else
+        {
+            final String[] requestedFruitPool = copyOfRange(args, 1, args.length);
+            if (!hasFruits(requestedFruitPool))
+            {
+                quit(false);
+            }
+            out.println(".........");
+            fruitString = getFruits(count, requestedFruitPool);
+        }
 
-        if (args.length == 1) // no specifics given, just randomly pick from everything
-        {
-            //            range(0, length).forEach(index -> out.print(FruitBasket.getFruit()));
-        }
-        else if (args.length == 2) // one specific was given, just get that one fruit and be done
-        {
-            if (!FruitBasket.hasFruits(args[1]))
-            {
-                quit(false);
-            }
-        }
-        else // specific list was given
-        {
-            if (!FruitBasket.hasFruits(Arrays.copyOfRange(args, 1, args.length)))
-            {
-                quit(false);
-            }
-        }
+        clipboard.setContents(new StringSelection(fruitString), null);
+        out.println("Fruit generated and copied to clipboard! *dab* ;D");
     }
 
     private static void quit(final boolean isForListReq)
