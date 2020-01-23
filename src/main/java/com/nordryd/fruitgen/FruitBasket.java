@@ -70,14 +70,28 @@ public class FruitBasket
     public String toString()
     {
         final StringBuilder strBuilder = new StringBuilder();
-        FRUITS.forEach((fruit, encoding) -> strBuilder.append(format("%s %s\n", fruit, encoding)));
+        FRUITS.forEach((fruit, encoding) -> strBuilder.append(format("%s\n", fruit)));
         return strBuilder.toString();
     }
 
     static
     {
+        FRUITS.put("grapes", "\uD83C\uDF47");
+        FRUITS.put("melon", "\uD83C\uDF48");
         FRUITS.put("watermelon", "\uD83C\uDF49");
-        FRUITS.put("peach", "\uD83C\uDF51");
+        FRUITS.put("orange", "\uD83C\uDF4A");
+        FRUITS.put("lemon", "\uD83C\uDF4B");
+        FRUITS.put("banana", "\uD83C\uDF4C");
         FRUITS.put("pineapple", "\uD83C\uDF4D");
+        FRUITS.put("mango", "\uD83E\uDD6D");
+        FRUITS.put("redapple", "\uD83C\uDF4E");
+        FRUITS.put("greenapple", "\uD83C\uDF4F");
+        FRUITS.put("pear", "\uD83C\uDF50");
+        FRUITS.put("peach", "\uD83C\uDF51");
+        FRUITS.put("cherry", "\uD83C\uDF52");
+        FRUITS.put("strawberry", "\uD83C\uDF53");
+        FRUITS.put("kiwi", "\uD83E\uDD5D");
+        FRUITS.put("tomato", "\uD83C\uDF45");
+        FRUITS.put("coconut", "\uD83E\uDD65");
     }
 }

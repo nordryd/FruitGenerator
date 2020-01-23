@@ -14,15 +14,17 @@ import java.awt.datatransfer.StringSelection;
 
 /**
  * Main class. Generates a string of fruit and copies it to the clipboard because why not?
+ * Coding decisions may or may not have been made to make some people tick. You know who you are ;)
  *
  * @author Nordryd
  */
 public class FruitGenerator
 {
-    private static final String HELP_STR = "list";
-
     public static void main(final String... args)
     {
+        out.println("\n***WHALECOME TO NORDRYD'S FRUIT GENERATOR***\n");
+        out.println("*Source code available at: https://github.com/nordryd/FruitGenerator*");
+        out.println("*pssst... co-workers should DEFINITELY check it out (y'all will LUV it :P)*\n");
         if (args.length < 1)
         {
             quit(false);
@@ -30,7 +32,7 @@ public class FruitGenerator
 
         if (!args[0].matches("^\\d+$"))
         {
-            quit(HELP_STR.equals(args[0]));
+            quit("list".equalsIgnoreCase(args[0]) || "help".equalsIgnoreCase(args[0]));
         }
 
         final int count = parseInt(args[0]);
@@ -44,8 +46,8 @@ public class FruitGenerator
         final String fruitString;
         if (args.length == 1)
         {
+            out.println("Generating lines of sweet, juicy goodness...");
             fruitString = getFruits(count);
-            out.println(".........");
         }
         else
         {
@@ -54,7 +56,7 @@ public class FruitGenerator
             {
                 quit(false);
             }
-            out.println(".........");
+            out.println("Generating lines of sweet, juicy goodness...");
             fruitString = getFruits(count, requestedFruitPool);
         }
 
@@ -64,14 +66,14 @@ public class FruitGenerator
 
     private static void quit(final boolean isForListReq)
     {
+        err.println("USAGE: java -jar FruitGenerator.jar [length > 0] [specific fruits (optional)]");
+        err.println("Will pick from all possible fruits if none are specified.");
+        err.println("For a list of valid fruits: java -jar FruitGenerator.jar list");
         if (isForListReq)
         {
-            out.println("List of valid fruit values (case does not matter):\n" + new FruitBasket().toString());
+            out.println("\nList of valid fruit values (case does not matter):\n" + new FruitBasket().toString());
             exit(2);
         }
-        err.println(
-                "Usage: java -jar FruitGenerator.jar [length > 0] [specific fruits (optional)]\nFor a list of valid fruits: java -jar FruitGenerator.jar " +
-                        HELP_STR);
         exit(1);
     }
 }
