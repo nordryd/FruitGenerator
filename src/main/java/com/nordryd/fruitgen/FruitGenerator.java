@@ -4,66 +4,72 @@ import static java.lang.Integer.parseInt;
 import static java.lang.System.err;
 import static java.lang.System.exit;
 import static java.lang.System.out;
-import static java.util.Arrays.copyOfRange;
-import static java.util.Arrays.stream;
-import static java.util.stream.IntStream.range;
 
-import java.util.Random;
+import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.util.Arrays;
 
 /**
- * Generates a string of fruit because why not?
+ * Generates a string of fruit and copies it to the clipboard because why not?
  *
  * @author Nordryd
  */
-public class FruitGenerator {
-    private static final Random rng = new Random();
+public class FruitGenerator
+{
     private static final String HELP_STR = "list";
 
-    public static void main(final String[] args) {
+    public static void main(final String... args)
+    {
         out.println(args.length);
-        if (args.length < 2) {
-            fail();
+        if (args.length < 1)
+        {
+            quit(false);
         }
 
-        if (HELP_STR.equals(args[0])) {
-            out.println("List of valid fruit values (case does not matter):");
-            stream(Fruit.values()).forEach(fruit -> out.printf("%s %s\n", fruit, fruit.toString()));
-            exit(0);
+        if (!args[0].matches("^\\d+$"))
+        {
+            quit(HELP_STR.equals(args[0]));
         }
 
-        final int length = parseInt(args[1]);
+        final int length = parseInt(args[0]);
 
-        if (length < 0) {
-            fail();
+        if (length <= 0)
+        {
+            quit(false);
         }
 
-        if (args.length == 2) { // no specifics given, just randomly pick from everything
-            range(0, length).forEach(index -> out.print(getFruit()));
+        final Clipboard CLIPBOARD = Toolkit.getDefaultToolkit().getSystemClipboard();
+
+        if (args.length == 1) // no specifics given, just randomly pick from everything
+        {
+            //            range(0, length).forEach(index -> out.print(FruitBasket.getFruit()));
         }
-        else if (args.length == 3) { // one specific was given, just get that one fruit and be done
-            final Fruit fruit = getFruit(args[2]);
-            range(0, length).forEach(index -> out.print(fruit));
+        else if (args.length == 2) // one specific was given, just get that one fruit and be done
+        {
+            if (!FruitBasket.hasFruits(args[1]))
+            {
+                quit(false);
+            }
         }
-        else {
-            range(0, length).forEach(index -> out.print(getFruit(copyOfRange(args, 2, args.length))));
+        else // specific list was given
+        {
+            if (!FruitBasket.hasFruits(Arrays.copyOfRange(args, 1, args.length)))
+            {
+                quit(false);
+            }
         }
     }
 
-    private static Fruit getFruit() {
-        return getFruit(stream(Fruit.values()).map(Fruit::toString).toArray(String[]::new));
-    }
-
-    private static Fruit getFruit(final String... fruitStrs) {
-        return Fruit.WATERMELON;
-    }
-
-    private static Fruit getFruit(final String fruit) {
-        return Fruit.valueOf(fruit.toUpperCase());
-    }
-
-    private static void fail() {
+    private static void quit(final boolean isForListReq)
+    {
+        if (isForListReq)
+        {
+            out.println("List of valid fruit values (case does not matter):\n" + new FruitBasket().toString());
+            exit(2);
+        }
         err.println(
-                "Usage: java -jar FruitGenerator.jar [output file] [length > 0] [specific fruits (optional)]\nFor a list of valid fruits: java -jar FruitGenerator.jar " + HELP_STR);
-        throw new IllegalArgumentException();
+                "Usage: java -jar FruitGenerator.jar [length > 0] [specific fruits (optional)]\nFor a list of valid fruits: java -jar FruitGenerator.jar " +
+                        HELP_STR);
+        exit(1);
     }
 }
