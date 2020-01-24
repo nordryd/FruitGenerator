@@ -11,17 +11,16 @@ import org.junit.Test;
 import org.junit.rules.ErrorCollector;
 
 /**
+ * <p>
  * Unit tests for {@link FruitBasket}.
+ * </p>
  *
  * @author Nordryd
  */
 public class FruitBasketTest
 {
-    private static final String FRUIT_QUERIES_CASE_SENS = "Fruit queries are case-sensitive, & shouldn't be, dumbass \uD83C\uDF4D";
-    private static final int SINGLE_FRUIT_STR_LENGTH = 2;
-
     @Rule
-    public final ErrorCollector multAssert = new ErrorCollector();
+    public final ErrorCollector assertMultiple = new ErrorCollector();
 
     @Test
     public void testHasFruitsInvalidFruit()
@@ -32,15 +31,25 @@ public class FruitBasketTest
     @Test
     public void testHasFruitsFirstValidSecondInvalid()
     {
-        assertThat(hasFruits("pineapple", ""), is(false));
+        assertThat(hasFruits("peach", ""), is(false));
     }
 
     @Test
     public void testHasFruitsValidFruitLowercase()
     {
-        multAssert.checkThat(FRUIT_QUERIES_CASE_SENS + "(lowercase)", hasFruits("peach"), is(true));
-        multAssert.checkThat(FRUIT_QUERIES_CASE_SENS + "(mult-case)", hasFruits("PeaCH"), is(true));
-        multAssert.checkThat(FRUIT_QUERIES_CASE_SENS + "(uppercase)", hasFruits("PEACH"), is(true));
+        assertMultiple.checkThat("Fruit queries are case-sensitive, & shouldn't be, dumbass (lowercase) \uD83C\uDF4D",
+                hasFruits("peach"), is(true));
+        assertMultiple.checkThat("Fruit queries are case-sensitive, & shouldn't be, dumbass (mult-case) \uD83C\uDF4D",
+                hasFruits("PeaCH"), is(true));
+        assertMultiple.checkThat("Fruit queries are case-sensitive, & shouldn't be, dumbass (uppercase) \uD83C\uDF4D",
+                hasFruits("PEACH"), is(true));
+    }
+
+    @Test
+    public void testHasFruitsValidForApple()
+    {
+        assertMultiple.checkThat("\"apple\" is not valid on its own", hasFruits("apple"), is(true));
+        assertMultiple.checkThat("\"apple\" is not valid on with others", hasFruits("peach", "apple"), is(true));
     }
 
     @Test
@@ -70,14 +79,15 @@ public class FruitBasketTest
     @Test
     public void testGetFruitsSingle()
     {
-        assertThat(getFruits(1).length(), is(SINGLE_FRUIT_STR_LENGTH));
+        final int desiredLength = 1, expectedLength = desiredLength * 2;
+        assertThat(getFruits(desiredLength).length(), is(expectedLength));
     }
 
     @Test
     public void testGetFruits()
     {
-        final int desiredLength = 5;
-        assertThat(getFruits(desiredLength).length(), is(desiredLength * SINGLE_FRUIT_STR_LENGTH));
+        final int desiredLength = 5, expectedLength = desiredLength * 2;
+        assertThat(getFruits(desiredLength).length(), is(expectedLength));
     }
 
     @Test
@@ -89,22 +99,29 @@ public class FruitBasketTest
     @Test
     public void testGetFruitsWithArgsSingleForSingleArg()
     {
+        final int desiredLength = 1, expectedLength = desiredLength * 2;
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
-        final String actual = getFruits(1, desiredFruit);
-        assertThat(format("the returned length was not %d", SINGLE_FRUIT_STR_LENGTH), actual.length(),
-                is(SINGLE_FRUIT_STR_LENGTH));
+        final String actual = getFruits(desiredLength, desiredFruit);
+        assertThat(format("the returned length was not %d", expectedLength), actual.length(), is(expectedLength));
         assertThat(format("the returned string was not a single %s (%s)", desiredFruit, desiredFruitEncoding),
                 desiredFruitEncoding.equals(actual), is(true));
     }
 
     @Test
+    public void testGetFruitForApple()
+    {
+        final String redApple = "\uD83C\uDF4E", greenApple = "\uD83C\uDF4F";
+        assertThat(getFruits(5, "apple").replaceAll("[" + redApple + greenApple + "]", ""), is(""));
+    }
+
+    @Test
     public void testGetFruitsWithArgsSingleForMultipleArgs()
     {
+        final int desiredLength = 1, expectedLength = desiredLength * 2;
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
         final String desiredFruitOther = "peach", desiredFruitEncodingOther = "\uD83C\uDF51";
-        final String actual = getFruits(1, desiredFruit, desiredFruitOther);
-        assertThat(format("the returned length was not %d", SINGLE_FRUIT_STR_LENGTH), actual.length(),
-                is(SINGLE_FRUIT_STR_LENGTH));
+        final String actual = getFruits(desiredLength, desiredFruit, desiredFruitOther);
+        assertThat(format("the returned length was not %d", expectedLength), actual.length(), is(expectedLength));
         assertThat(format("the returned string was not a single %s (%s) or %s (%s)", desiredFruit, desiredFruitEncoding,
                 desiredFruitOther, desiredFruitEncodingOther),
                 desiredFruitEncoding.equals(actual) || desiredFruitEncodingOther.equals(actual), is(true));
@@ -113,11 +130,10 @@ public class FruitBasketTest
     @Test
     public void testGetFruitsWithArgsOneFruit()
     {
-        final int desiredLength = 5;
+        final int desiredLength = 5, expectedLength = desiredLength * 2;
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
         final String actual = getFruits(desiredLength, desiredFruit);
-        assertThat(format("the returned length was not %d", desiredLength), actual.length(),
-                is(desiredLength * SINGLE_FRUIT_STR_LENGTH));
+        assertThat(format("the returned length was not %d", desiredLength), actual.length(), is(expectedLength));
         assertThat(format("the returned string contained fruits that were not %s (%s)", desiredFruit,
                 desiredFruitEncoding), actual.replaceAll(desiredFruitEncoding, ""), is(""));
     }
@@ -125,8 +141,7 @@ public class FruitBasketTest
     @Test
     public void testGetFruitsWithArgs()
     {
-        final int desiredLength = 5;
-        assertThat(getFruits(desiredLength, "pineapple", "peach").length(),
-                is(desiredLength * SINGLE_FRUIT_STR_LENGTH));
+        final int desiredLength = 5, expectedLength = desiredLength * 2;
+        assertThat(getFruits(desiredLength, "pineapple", "peach").length(), is(expectedLength));
     }
 }
