@@ -1,6 +1,5 @@
 package com.nordryd.fruitgen;
 
-import static java.lang.String.format;
 import static java.util.Arrays.stream;
 import static java.util.stream.IntStream.range;
 
@@ -9,7 +8,9 @@ import java.util.Map;
 import java.util.Random;
 
 /**
+ * <p>
  * Handles actual generation of fruit emojis. Basket sounds cuter than Factory.
+ * </p>
  *
  * @author Nordryd
  */
@@ -49,29 +50,30 @@ public class FruitBasket
     }
 
     /**
-     * Checks all given fruits exist in the basket.
+     * Checks if all given fruits are valid.
      *
-     * @param fruits the fruits string to validate.
+     * @param fruits the fruit strings to validate.
      * @return {@code true} if <i>all</i> fruits are valid.
      */
     public static boolean hasFruits(final String... fruits)
     {
-        return (fruits.length == 1) ?
-                FRUITS.containsKey(fruits[0].toLowerCase()) :
-                stream(fruits).allMatch(FRUITS::containsKey);
-    }
-
-    private static String getFruit(final String fruit)
-    {
-        return FRUITS.get(fruit.toLowerCase());
+        return stream(fruits)
+                .allMatch(fruit -> "apple".equalsIgnoreCase(fruit) || FRUITS.containsKey(fruit.toLowerCase()));
     }
 
     @Override
     public String toString()
     {
         final StringBuilder strBuilder = new StringBuilder();
-        FRUITS.forEach((fruit, encoding) -> strBuilder.append(format("%s\n", fruit)));
-        return strBuilder.toString();
+        FRUITS.forEach((fruit, encoding) -> strBuilder.append(fruit).append("\n"));
+        return strBuilder.append("apple (will randomly give a red or green one)").toString();
+    }
+
+    private static String getFruit(final String fruit)
+    {
+        return FRUITS.get("apple".equalsIgnoreCase(fruit) ?
+                (RNG.nextBoolean() ? "redapple" : "greenapple") :
+                fruit.toLowerCase());
     }
 
     static
