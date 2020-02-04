@@ -1,6 +1,9 @@
 package com.nordryd.fruitgen;
 
+import static com.nordryd.fruitgen.FruitGenerator.getFruitString;
 import static com.nordryd.fruitgen.FruitGenerator.main;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.contrib.java.lang.system.ExpectedSystemExit.none;
 
 import org.junit.Rule;
@@ -74,5 +77,41 @@ public class FruitGeneratorTest
     {
         sysExit.expectSystemExitWithStatus(2);
         main(HELP_STR);
+    }
+
+    @Test
+    public void testGetFruitString1Arg()
+    {
+        assertEquals(2, getFruitString(1).length());
+    }
+
+    @Test
+    public void testGetFruitString1ArgSingleFruit()
+    {
+        final String actual = getFruitString(1, "pineapple");
+        assertEquals(2, actual.length());
+        assertTrue(actual.replaceAll("\uD83C\uDF4D", "").isEmpty());
+    }
+
+    @Test
+    public void testGetFruitStringMultipleArgSingleFruit()
+    {
+        final String actual = getFruitString(3, "pineapple", "peach");
+        assertEquals(6, actual.length());
+        assertTrue(actual.replaceAll("[\uD83C\uDF4D\uD83C\uDF51]", "").isEmpty());
+    }
+
+    @Test
+    public void testGetFruitStringInvalidFruit()
+    {
+        sysExit.expectSystemExitWithStatus(3);
+        getFruitString(3, "adfaf");
+    }
+
+    @Test
+    public void testGetFruitStringOneValidFruitAnotherInvalidFruit()
+    {
+        sysExit.expectSystemExitWithStatus(3);
+        getFruitString(3, "peach", "adfaf");
     }
 }

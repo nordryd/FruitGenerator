@@ -10,7 +10,6 @@ import static java.lang.System.exit;
 import static java.lang.System.out;
 import static java.util.Arrays.copyOfRange;
 
-import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 
 /**
@@ -56,26 +55,34 @@ public class FruitGenerator
             quit(QuitReason.ZERO_OR_NEG_LENGTH);
         }
 
-        final Clipboard clipboard = getDefaultToolkit().getSystemClipboard();
-        final String fruitString;
-        if (args.length == 1)
+        getDefaultToolkit().getSystemClipboard()
+                .setContents(new StringSelection(getFruitString(count, copyOfRange(args, 1, args.length))), null);
+        out.println(Messages.SUCCESS);
+    }
+
+    /**
+     * Generates an amount of fruit based on a given pool of possible fruits.
+     *
+     * @param amount the amount to generate.
+     * @param fruitPool the pool of possible fruits that can generate.
+     * @return a string of fruit.
+     */
+    public static String getFruitString(final int amount, final String... fruitPool)
+    {
+        if (fruitPool.length == 0)
         {
             out.println(Messages.WHALECOME + Messages.GENERATING);
-            fruitString = getFruits(count);
+            return getFruits(amount);
         }
         else
         {
-            final String[] requestedFruitPool = copyOfRange(args, 1, args.length);
-            if (!hasFruits(requestedFruitPool))
+            if (!hasFruits(fruitPool))
             {
                 quit(QuitReason.INVALID_FRUIT);
             }
             out.println(Messages.WHALECOME + Messages.GENERATING);
-            fruitString = getFruits(count, requestedFruitPool);
+            return getFruits(amount, fruitPool);
         }
-
-        clipboard.setContents(new StringSelection(fruitString), null);
-        out.println(Messages.SUCCESS);
     }
 
     private static void quit(final QuitReason quitReason)

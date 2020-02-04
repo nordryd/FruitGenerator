@@ -4,7 +4,9 @@ import static com.nordryd.fruitgen.FruitBasket.getFruits;
 import static com.nordryd.fruitgen.FruitBasket.hasFruits;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,13 +27,13 @@ public class FruitBasketTest
     @Test
     public void testHasFruitsInvalidFruit()
     {
-        assertThat(hasFruits(""), is(false));
+        assertFalse(hasFruits(""));
     }
 
     @Test
     public void testHasFruitsFirstValidSecondInvalid()
     {
-        assertThat(hasFruits("peach", ""), is(false));
+        assertFalse(hasFruits("peach", ""));
     }
 
     @Test
@@ -55,45 +57,45 @@ public class FruitBasketTest
     @Test
     public void testGetFruitsZeroLength()
     {
-        assertThat(getFruits(0), is(""));
+        assertTrue(getFruits(0).isEmpty());
     }
 
     @Test
     public void testGetFruitsWithArgsZeroLength()
     {
-        assertThat(getFruits(0, "peach"), is(""));
+        assertTrue(getFruits(0, "peach").isEmpty());
     }
 
     @Test
     public void testGetFruitsNegativeLength()
     {
-        assertThat(getFruits(-1), is(""));
+        assertTrue(getFruits(-1).isEmpty());
     }
 
     @Test
     public void testGetFruitsWithArgsNegativeLength()
     {
-        assertThat(getFruits(-1, "peach"), is(""));
+        assertTrue(getFruits(-1, "peach").isEmpty());
     }
 
     @Test
     public void testGetFruitsSingle()
     {
         final int desiredLength = 1, expectedLength = desiredLength * 2;
-        assertThat(getFruits(desiredLength).length(), is(expectedLength));
+        assertEquals(expectedLength, getFruits(desiredLength).length());
     }
 
     @Test
     public void testGetFruits()
     {
         final int desiredLength = 5, expectedLength = desiredLength * 2;
-        assertThat(getFruits(desiredLength).length(), is(expectedLength));
+        assertEquals(expectedLength, getFruits(desiredLength).length());
     }
 
     @Test
     public void testGetFruitsWithArgsInvalidFruit()
     {
-        assertThat(getFruits(5, ""), is(""));
+        assertTrue(getFruits(5, "").isEmpty());
     }
 
     @Test
@@ -102,16 +104,16 @@ public class FruitBasketTest
         final int desiredLength = 1, expectedLength = desiredLength * 2;
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
         final String actual = getFruits(desiredLength, desiredFruit);
-        assertThat(format("the returned length was not %d", expectedLength), actual.length(), is(expectedLength));
-        assertThat(format("the returned string was not a single %s (%s)", desiredFruit, desiredFruitEncoding),
-                desiredFruitEncoding.equals(actual), is(true));
+        assertEquals(format("the returned length was not %d", expectedLength), expectedLength, actual.length());
+        assertEquals(format("the returned string was not a single %s (%s)", desiredFruit, desiredFruitEncoding),
+                desiredFruitEncoding, actual);
     }
 
     @Test
     public void testGetFruitForApple()
     {
         final String redApple = "\uD83C\uDF4E", greenApple = "\uD83C\uDF4F";
-        assertThat(getFruits(5, "apple").replaceAll("[" + redApple + greenApple + "]", ""), is(""));
+        assertEquals("", getFruits(5, "apple").replaceAll("[" + redApple + greenApple + "]", ""));
     }
 
     @Test
@@ -121,10 +123,10 @@ public class FruitBasketTest
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
         final String desiredFruitOther = "peach", desiredFruitEncodingOther = "\uD83C\uDF51";
         final String actual = getFruits(desiredLength, desiredFruit, desiredFruitOther);
-        assertThat(format("the returned length was not %d", expectedLength), actual.length(), is(expectedLength));
-        assertThat(format("the returned string was not a single %s (%s) or %s (%s)", desiredFruit, desiredFruitEncoding,
+        assertEquals(format("the returned length was not %d", expectedLength), expectedLength, actual.length());
+        assertTrue(format("the returned string was not a single %s (%s) or %s (%s)", desiredFruit, desiredFruitEncoding,
                 desiredFruitOther, desiredFruitEncodingOther),
-                desiredFruitEncoding.equals(actual) || desiredFruitEncodingOther.equals(actual), is(true));
+                desiredFruitEncoding.equals(actual) || desiredFruitEncodingOther.equals(actual));
     }
 
     @Test
@@ -133,15 +135,15 @@ public class FruitBasketTest
         final int desiredLength = 5, expectedLength = desiredLength * 2;
         final String desiredFruit = "pineapple", desiredFruitEncoding = "\uD83C\uDF4D";
         final String actual = getFruits(desiredLength, desiredFruit);
-        assertThat(format("the returned length was not %d", desiredLength), actual.length(), is(expectedLength));
-        assertThat(format("the returned string contained fruits that were not %s (%s)", desiredFruit,
-                desiredFruitEncoding), actual.replaceAll(desiredFruitEncoding, ""), is(""));
+        assertEquals(format("the returned length was not %d", desiredLength), expectedLength, actual.length());
+        assertTrue(format("the returned string contained fruits that were not %s (%s)", desiredFruit,
+                desiredFruitEncoding), actual.replaceAll(desiredFruitEncoding, "").isEmpty());
     }
 
     @Test
     public void testGetFruitsWithArgs()
     {
         final int desiredLength = 5, expectedLength = desiredLength * 2;
-        assertThat(getFruits(desiredLength, "pineapple", "peach").length(), is(expectedLength));
+        assertEquals(expectedLength, getFruits(desiredLength, "pineapple", "peach").length());
     }
 }
